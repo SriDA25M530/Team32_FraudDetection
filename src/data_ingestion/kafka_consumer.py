@@ -5,10 +5,10 @@ from kafka import KafkaConsumer
 
 # Server Infrastructure Configuration
 BROKER = "kafka:29092"
-TOPIC = "team32-fd-kafka"
+TOPIC = "team32-fd-kafka-19th-Aug_3"
 
 # Writing to /tmp/ to avoid server permission errors
-OUTPUT_CSV = "/storage/scratch/team32_consumed_transactions.csv"
+OUTPUT_CSV = "/storage/scratch/team32_consumed_19th_Aug_3.csv"
 
 def run_consumer(timeout_ms: int = 10000):
     print(f"==================================================")
@@ -20,7 +20,7 @@ def run_consumer(timeout_ms: int = 10000):
         bootstrap_servers=[BROKER],
         auto_offset_reset='earliest',
         enable_auto_commit=True,
-        group_id="team32-fd-consumer-group-demo",
+        group_id="team32-fd-consumer-19th-Aug_3",
         value_deserializer=lambda x: json.loads(x.decode('utf-8')),
         key_deserializer=lambda x: x.decode('utf-8') if x else '',
         consumer_timeout_ms=timeout_ms  # Stops listening automatically when stream is empty
