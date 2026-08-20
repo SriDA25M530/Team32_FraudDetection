@@ -44,26 +44,57 @@ with DAG(
     # TASK 4: Model Training & MLflow Logging
     # ---------------------------------------------------------
     # # Trains the model on the processed data and logs metrics to MLflow
-   run_training = BashOperator(
-        task_id='run_model_training',
+#    run_training = BashOperator(
+#         task_id='run_model_training',
+#         bash_command=(
+#             'docker exec '
+#             '-e MLFLOW_TRACKING_URI="$MLFLOW_TRACKING_URI" '
+#             '-e MLFLOW_EXPERIMENT_NAME=team32_fraud_detection '
+#             'spark-master /opt/spark/bin/spark-submit '
+#             '--master spark://spark-master:7077 '
+#             '--total-executor-cores 2 '
+#             '--executor-cores 2 '
+#             '--executor-memory 4g '
+#             '--driver-memory 1g '
+#             '--conf spark.driver.cores=1 '
+#             '--conf spark.driver.maxResultSize=1g '
+#             '/storage/uploads/Team32_FraudDetection/src/models/train.py'
+#         )
+#     )
+    # ---------------------------------------------------------
+    # TASK 5: Teardown Existing API Container
+    # ---------------------------------------------------------
+    # Safely spin down the old container to free up the port
+    stop_api = BashOperator(
+        task_id='stop_existing_api',
+        bash_command='cd /storage/uploads/Team32_FraudDetection && docker-compose down',
+    )
+
+    # ---------------------------------------------------------
+    # TASK 6: Build and Deploy New API Container
+    # ---------------------------------------------------------
+    # Build the fresh Docker image and start the container in detached mode
+    deploy_api = BashOperator(
+        task_id='deploy_fastapi',
         bash_command=(
-            'docker exec '
-            '-e MLFLOW_TRACKING_URI="$MLFLOW_TRACKING_URI" '
-            '-e MLFLOW_EXPERIMENT_NAME=team32_fraud_detection '
-            'spark-master /opt/spark/bin/spark-submit '
-            '--master spark://spark-master:7077 '
-            '--total-executor-cores 2 '
-            '--executor-cores 2 '
-            '--executor-memory 4g '
-            '--driver-memory 1g '
-            '--conf spark.driver.cores=1 '
-            '--conf spark.driver.maxResultSize=1g '
-            '/storage/uploads/Team32_FraudDetection/src/models/train.py'
+            'cd /storage/uploads/Team32_FraudDetection && '
+            # 1. Stop and remove the old container if it exists (ignores errors if it doesn't)
+            'docker rm -f team32-fraud-api || true && '
+            # 2. Build the new Docker image
+            'docker build -t team32-fraud-api -f docker/Dockerfile . && '
+            # 3. Run the new container with the exact settings from your docker-compose.yml
+            'docker run -d --name team32-fraud-api -p 8000:8000 -v /storage:/storage -e PYTHONUNBUFFERED=1 team32-fraud-api'
         )
     )
 
     # ---------------------------------------------------------
     # Define Task Dependencies (Execution Order)
     # ---------------------------------------------------------
+    # Assuming run_training is your Phase 4 task
+    stop_api >> deploy_api
+
+    # ---------------------------------------------------------
+    # Define Task Dependencies (Execution Order)
+    # ---------------------------------------------------------
     #run_producer >> run_consumer >> run_preprocessing >> run_training
-    run_training
+    
