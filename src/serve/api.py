@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from prometheus_fastapi_instrumentator import Instrumentator
 from pydantic import BaseModel
 from typing import Dict
 import uvicorn
@@ -9,6 +10,11 @@ from pyspark.sql import Row
 
 app = FastAPI(title="Team 32 - Fraud Detection API (Model Comparison)")
 
+# Add this line right after defining your "app" variable
+Instrumentator().instrument(app).expose(app)
+
+
+# Load artifacts into memory
 # Paths to both saved models
 LR_MODEL_PATH = "/storage/scratch/Team32_FraudDetection/logistic_regression_model"
 GBT_MODEL_PATH = "/storage/scratch/Team32_FraudDetection/gbt_classifier_model"
