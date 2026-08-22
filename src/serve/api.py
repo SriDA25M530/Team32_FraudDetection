@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from prometheus_fastapi_instrumentator import Instrumentator
+from prometheus_client import Counter
 from pydantic import BaseModel
 from typing import Dict
 import uvicorn
@@ -13,6 +14,11 @@ app = FastAPI(title="Team 32 - Fraud Detection API (Model Comparison)")
 # Add this line right after defining your "app" variable
 Instrumentator().instrument(app).expose(app)
 
+prediction_counter = Counter(
+    "fraud_predictions_total", 
+    "Total number of predictions made by the models",
+    ["prediction_class", "model_name"] # These labels let you group in Grafana
+)
 
 # Load artifacts into memory
 # Paths to both saved models
@@ -68,6 +74,24 @@ def predict_fraud(req: TransactionRequest):
         lr_result = lr_predictions.select("probability", "prediction").first()
         gbt_result = gbt_predictions.select("probability", "prediction").first()
         
+        lr_is_fraud = int(lr_result.prediction)
+        gbt_is_fraud = int(gbt_result.prediction)
+
+        # ---------------------------------------------------------
+        # 5. Record Metrics to Prometheus
+        # ---------------------------------------------------------
+        # Track Logistic Regression predictions
+        if lr_is_fraud == 1:
+            prediction_counter.labels(prediction_class="fraud", model_name="logistic_regression").inc()
+        else:
+            prediction_counter.labels(prediction_class="genuine", model_name="logistic_regression").inc()
+
+        # Track GBT Classifier predictions
+        if gbt_is_fraud == 1:
+            prediction_counter.labels(prediction_class="fraud", model_name="gbt").inc()
+        else:
+            prediction_counter.labels(prediction_class="genuine", model_name="gbt").inc()
+
         return {
             "logistic_regression": {
                 "fraud_probability": float(lr_result.probability[1]),

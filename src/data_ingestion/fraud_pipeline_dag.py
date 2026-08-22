@@ -87,11 +87,20 @@ with DAG(
         )
     )
 
+    fetch_docker_logs = BashOperator(
+        task_id="fetch_api_crash_logs",
+        # (Note the space at the end of the command - this is an Airflow best practice 
+        # to prevent it from mistaking the string for a file path)
+        bash_command="docker logs team32-fraud-api --tail 50 ",
+        
+        # 2. This rule forces the task to run even if the test_api_python task fails
+        trigger_rule=TriggerRule.ALL_DONE,
+    )
     # ---------------------------------------------------------
     # Define Task Dependencies (Execution Order)
     # ---------------------------------------------------------
     # Assuming run_training is your Phase 4 task
-    stop_api >> deploy_api
+    deploy_api
 
     # ---------------------------------------------------------
     # Define Task Dependencies (Execution Order)
