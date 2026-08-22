@@ -7,7 +7,7 @@ import mlflow
 import mlflow.spark
 
 # Server Paths
-PROCESSED_DATA_DIR = "/storage/uploads/Team32_FraudDetection/data/processed/team32_processed_transactions_spark/"
+PROCESSED_DATA_DIR = "/storage/uploads/Team32_FraudDetection/data/processed/"
 LR_MODEL_DIR = "/storage/scratch/Team32_FraudDetection/logistic_regression_model"
 GBT_MODEL_DIR = "/storage/scratch/Team32_FraudDetection/gbt_classifier_model"
 
