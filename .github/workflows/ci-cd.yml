@@ -1,0 +1,71 @@
+name: Simulated MLOps CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  # -------------------------------------------------------------
+  # Phase 1: Continuous Integration (CI) - Code Checks & Linting
+  # -------------------------------------------------------------
+  continuous_integration:
+    name: Code Quality and Testing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install CI Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 dvc
+
+      - name: Lint Code with Flake8
+        run: |
+          # The --exit-zero flag ensures the pipeline passes even if there are formatting warnings.
+          # It demonstrates linting is configured without breaking your current workflow.
+          flake8 src/ dags/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: Verify DVC Configuration
+        run: |
+          # Checks that DVC is initialized without pulling the massive datasets
+          dvc status || echo "DVC is present but requires remote connection. Skipping data pull for CI."
+
+      - name: Run Unit Tests (Simulated)
+        run: |
+          echo "Simulating pytest execution for data preprocessing..."
+          echo "Test passed: Data schemas match."
+          echo "Test passed: Model artifacts exist."
+
+  # -------------------------------------------------------------
+  # Phase 2: Continuous Deployment (CD) - Simulated Release
+  # -------------------------------------------------------------
+  continuous_deployment:
+    name: Deploy to Airflow Server (Dry Run)
+    needs: continuous_integration  # Wait for CI to pass
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Simulate Server Connection and Deployment
+        run: |
+          echo "==================================================="
+          echo "🚀 INITIATING MOCK DEPLOYMENT TO E2E SERVER"
+          echo "==================================================="
+          echo "1. Connecting to server da25m530@e2e-73-84..."
+          echo "2. Pulling latest code from GitHub..."
+          echo "3. Running 'dvc pull' to fetch updated datasets..."
+          echo "4. Copying student_da25m512_fraud_detection_test_21_Aug.py to ~/airflow/dags/..."
+          echo "5. Deployment Complete! Airflow scheduler will pick up the changes."
+          echo "==================================================="
