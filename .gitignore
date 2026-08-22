@@ -1,5 +1,2 @@
-data/
-.dvcignore
-.dvc/config
-.dvc/tmp/btime
-.dvc/tmp/lock
+
+

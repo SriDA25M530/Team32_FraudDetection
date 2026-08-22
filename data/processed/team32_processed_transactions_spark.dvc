@@ -1,0 +1,6 @@
+outs:
+- md5: b1a267abcd8dfe149e119538a7200c38.dir
+  size: 272332347
+  nfiles: 4
+  hash: md5
+  path: team32_processed_transactions_spark

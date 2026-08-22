@@ -1,0 +1,6 @@
+outs:
+- md5: 0998a48b910ac8a2243ea33ebc7e59f9.dir
+  size: 140054
+  nfiles: 32
+  hash: md5
+  path: Team32_FraudDetection
