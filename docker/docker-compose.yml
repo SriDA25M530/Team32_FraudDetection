@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  fraud-api:
+    build: 
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: team32-fraud-api
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount the server storage so the container can load the models
+      - /storage:/storage
+    environment:
+      - PYTHONUNBUFFERED=1
