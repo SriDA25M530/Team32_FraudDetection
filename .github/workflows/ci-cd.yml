@@ -1,10 +1,10 @@
-name: Simulated MLOps CI/CD Pipeline
+name: Simulated MLOps CI/CD Pipeline (Develop)
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "develop" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "develop" ]
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -32,7 +32,6 @@ jobs:
       - name: Lint Code with Flake8
         run: |
           # The --exit-zero flag ensures the pipeline passes even if there are formatting warnings.
-          # It demonstrates linting is configured without breaking your current workflow.
           flake8 src/ dags/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
       - name: Verify DVC Configuration
@@ -52,7 +51,7 @@ jobs:
   continuous_deployment:
     name: Deploy to Airflow Server (Dry Run)
     needs: continuous_integration  # Wait for CI to pass
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/develop' # Only deploys when code is in the develop branch
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -61,10 +60,10 @@ jobs:
       - name: Simulate Server Connection and Deployment
         run: |
           echo "==================================================="
-          echo "🚀 INITIATING MOCK DEPLOYMENT TO E2E SERVER"
+          echo "🚀 INITIATING MOCK DEPLOYMENT TO E2E SERVER (DEVELOP)"
           echo "==================================================="
           echo "1. Connecting to server da25m530@e2e-73-84..."
-          echo "2. Pulling latest code from GitHub..."
+          echo "2. Pulling latest code from GitHub 'develop' branch..."
           echo "3. Running 'dvc pull' to fetch updated datasets..."
           echo "4. Copying student_da25m512_fraud_detection_test_21_Aug.py to ~/airflow/dags/..."
           echo "5. Deployment Complete! Airflow scheduler will pick up the changes."
