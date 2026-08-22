@@ -8,7 +8,7 @@ BROKER = "kafka:29092"
 TOPIC = "team32-fd-kafka-19th-Aug_3"
 
 # Writing to /tmp/ to avoid server permission errors
-OUTPUT_CSV = "/storage/scratch/team32_consumed_19th_Aug_3.csv"
+OUTPUT_CSV = "/storage/scratch/team32_fd_kafka_consumed.csv"
 
 def run_consumer(timeout_ms: int = 10000):
     print(f"==================================================")

@@ -5,7 +5,7 @@ from pyspark.ml.feature import RobustScaler, VectorAssembler
 from pyspark.ml.functions import vector_to_array
 
 # Server Paths
-INPUT_CSV = "/storage/uploads/Team32_FraudDetection/data/raw/team32_consumed_19th_Aug_3.csv"
+INPUT_CSV = "/storage/uploads/Team32_FraudDetection/data/raw/team32_fd_kafka_consumed.csv"
 
 # Note: Spark writes directories, not single files. We will output to a folder.
 OUTPUT_DIR = "/storage/scratch/team32_processed_transactions_spark"
