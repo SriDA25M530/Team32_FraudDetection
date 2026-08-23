@@ -1,15 +1,24 @@
-version: '3.8'
+version: "3.8"
 
 services:
+
   fraud-api:
-    build: 
+
+    build:
       context: .
       dockerfile: docker/Dockerfile
-    container_name: team32-fraud-api
+
+    container_name: team32_final_end_to_end_pipeline_v1_fraud_api
+
+    image: team32_final_end_to_end_pipeline_V1_fraud_api_image
+
     ports:
       - "8000:8000"
+
     volumes:
-      # Mount the server storage so the container can load the models
       - /storage:/storage
+
     environment:
-      - PYTHONUNBUFFERED=1
+      BASE_PATH: /storage/uploads/Team32_FraudDetection
+      DAG_ID: team32_final_end_to_end_pipeline_v1
+      PYTHONUNBUFFERED: "1"
