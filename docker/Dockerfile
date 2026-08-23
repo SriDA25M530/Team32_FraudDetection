@@ -1,22 +1,50 @@
-# Use the 'bullseye' Debian release which officially supports Java 11
 FROM python:3.11-slim-bullseye
 
-# Install Java 11 (Required for PySpark to run without memory access errors)
+# =========================================================
+# Java 11 - required by PySpark
+# =========================================================
+
 RUN apt-get update && \
-    apt-get install -y openjdk-11-jre-headless && \
+    apt-get install -y \
+        openjdk-11-jre-headless \
+        curl && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# =========================================================
+# Environment
+# =========================================================
+
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+
+ENV PYTHONUNBUFFERED=1
+
 WORKDIR /app
 
-# Install Python dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# =========================================================
+# Python dependencies
+# =========================================================
 
-# Copy the API script
+COPY requirements.txt .
+
+RUN pip install \
+    --no-cache-dir \
+    -r requirements.txt
+
+# =========================================================
+# API
+# =========================================================
+
 COPY src/serve/api.py ./src/serve/api.py
+
+# =========================================================
+# Port
+# =========================================================
 
 EXPOSE 8000
 
-# Start the FastAPI server
+# =========================================================
+# Start FastAPI
+# =========================================================
+
 CMD ["uvicorn", "src.serve.api:app", "--host", "0.0.0.0", "--port", "8000"]

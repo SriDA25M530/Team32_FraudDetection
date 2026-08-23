@@ -65,6 +65,15 @@ jobs:
           echo "1. Connecting to server da25m530@e2e-73-84..."
           echo "2. Pulling latest code from GitHub 'develop' branch..."
           echo "3. Running 'dvc pull' to fetch updated datasets..."
-          echo "4. Copying student_da25m512_fraud_detection_test_21_Aug.py to ~/airflow/dags/..."
+          echo "4. Copying team32_final_end_to_end_pipeline_V2.py to ~/airflow/dags/..."
           echo "5. Deployment Complete! Airflow scheduler will pick up the changes."
           echo "==================================================="
+
+      - name: Trigger Airflow DAG via API
+        run: |
+          echo "Triggering Airflow DAG: team32_final_end_to_end_pipeline_V2"
+          curl -X POST "https://lab.samsai.io/airflow/api/v1/dags/team32_final_end_to_end_pipeline_V2/dagRuns" \
+            -H "accept: application/json" \
+            -H "Content-Type: application/json" \
+            --user "student:saffron-meadow-raven-sable-57" \
+            -d '{}'
